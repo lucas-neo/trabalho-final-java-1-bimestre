@@ -31,7 +31,28 @@ public class UserRepository implements EntityRepository<User> {
             throw new RuntimeException(e);
         }
     }
-
+    public Optional<User> findByEmail(String email) {
+        String query = "SELECT * FROM users WHERE email = ?";
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            stmt.setString(1, email);
+            ResultSet resultSet = stmt.executeQuery();
+    
+            if (resultSet.next()) {
+                return Optional.of(new User(
+                        UUID.fromString(resultSet.getString("uuid")),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
+                ));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar usuário por e-mail", e);
+        }
+    
+        return Optional.empty();
+    }
+    
     @Override
     public Optional<User> findById(UUID id) {
         String query = "SELECT * FROM users WHERE uuid = ?";
