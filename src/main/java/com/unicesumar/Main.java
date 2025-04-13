@@ -1,15 +1,15 @@
 package com.unicesumar;
 
-import com.unicesumar.entities.Product;
-import com.unicesumar.entities.User;
-import com.unicesumar.repository.ProductRepository;
-import com.unicesumar.repository.UserRepository;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+
+import com.unicesumar.entities.Product;
+import com.unicesumar.entities.User;
+import com.unicesumar.repository.ProductRepository;
+import com.unicesumar.repository.UserRepository;
 
 public class Main {
     public static void main(String[] args) {
@@ -52,8 +52,11 @@ public class Main {
             switch (option) {
                 case 1:
                     System.out.println("Cadastrar Produto");
-                    listaDeProdutos.save(new Product("Teste", 10));
-                    listaDeProdutos.save(new Product("Computador", 3000));
+                    System.out.println("Nome do Produto: ");
+                    String nomeProduto = scanner.next();
+                    System.out.println("Preço do Produto: ");
+                    Double precoProduto = scanner.nextDouble();
+                    listaDeProdutos.save(new Product(nomeProduto, precoProduto));
                     break;
                 case 2:
                     System.out.println("Listar Produtos");
