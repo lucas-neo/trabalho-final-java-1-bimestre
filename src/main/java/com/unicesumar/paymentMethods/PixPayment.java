@@ -1,7 +1,11 @@
 package com.unicesumar.paymentMethods;
 
+import java.util.UUID;
+
 public class PixPayment implements PaymentMethod {
     public void pay(double amount) {
-        System.out.println("Pagamento efetuado com sucesso via PIX");
+        UUID chaveAutenticacao = UUID.randomUUID();
+        System.out.printf("Pagamento via PIX de R$ %.2f realizado com sucesso.%n", amount);
+        System.out.println("Chave de autenticação: " + chaveAutenticacao);
     }
 }
