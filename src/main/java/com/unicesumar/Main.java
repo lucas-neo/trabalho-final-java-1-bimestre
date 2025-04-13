@@ -14,10 +14,6 @@ import com.unicesumar.entities.User;
 import com.unicesumar.paymentMethods.PaymentType;
 import com.unicesumar.repository.ProductRepository;
 import com.unicesumar.repository.UserRepository;
-import com.unicesumar.repository.VendaRepository;
-import com.unicesumar.entities.Venda;
-import com.unicesumar.utils.InputHelper;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -65,6 +61,8 @@ public class Main {
                     String nomeProduto = scanner.next();
                     System.out.println("Preço do Produto: ");
                     Double precoProduto = scanner.nextDouble();
+
+                    UUID produtoUUID = UUID.randomUUID();
                     listaDeProdutos.save(new Product(nomeProduto, precoProduto));
                     break;
 
@@ -78,8 +76,7 @@ public class Main {
                     System.out.println("Cadastrar Usuário");
                     System.out.println("Nome:");
                     String nome = scanner.next();
-                    System.out.println("E-mail:");
-                    String email = scanner.next();
+                    String email = InputHelper.readValidEmail(scanner);
                     System.out.println("Senha:");
                     String senha = scanner.next();
                     listaDeUsuarios.save(new User(nome, email, senha));
