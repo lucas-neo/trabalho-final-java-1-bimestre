@@ -4,12 +4,12 @@ import java.util.List;
 
 import com.unicesumar.paymentMethods.PaymentType;
 
-public class Vendas extends Entity{
+public class Venda extends Entity{
     private User user;
     private List<Product> produtos;
     private PaymentType paymentMethod;
 
-    public Vendas(User user, List<Product> products, PaymentType paymentMethod) {
+    public Venda(User user, List<Product> products, PaymentType paymentMethod) {
         super();
         this.user = user;
         this.produtos = products;
