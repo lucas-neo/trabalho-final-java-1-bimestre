@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL,
     password TEXT NOT NULL
 );
-
 CREATE TABLE sales (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,

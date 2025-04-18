@@ -32,7 +32,9 @@ public class User extends Entity {
         return password;
     }
 
+    @Override
     public String toString() {
-        return String.format("%s - %s", this.name, this.email);
+        return String.format("| %-36s | %-15s | %-25s |", getUuid(), name, email);
     }
+
 }

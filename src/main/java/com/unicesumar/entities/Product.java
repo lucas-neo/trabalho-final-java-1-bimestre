@@ -25,7 +25,8 @@ public class Product extends Entity {
         return this.price;
     }
 
+    @Override
     public String toString() {
-        return String.format("%s - %s", this.name, this.price);
+        return String.format("| %-36s | %-10s | R$ %-7.2f |", getUuid(), name, price);
     }
 }

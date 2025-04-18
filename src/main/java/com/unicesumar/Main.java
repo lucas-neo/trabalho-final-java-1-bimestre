@@ -18,7 +18,6 @@ import com.unicesumar.utils.InputHelper;
 import com.unicesumar.entities.Venda;
 import com.unicesumar.repository.VendaRepository;
 
-
 public class Main {
     public static void main(String[] args) {
         ProductRepository listaDeProdutos = null;
@@ -53,15 +52,15 @@ public class Main {
             System.out.println("2 - Listas Produtos");
             System.out.println("3 - Cadastrar Usuário");
             System.out.println("4 - Listar Usuários");
-            System.out.println("5 - Sair");
-            System.out.println("6 - Registrar Venda");
+            System.out.println("5 - Registrar Venda");
+            System.out.println("6 - Sair");
             System.out.println("Escolha uma opção: ");
             option = scanner.nextInt();
 
             switch (option) {
                 case 1:
                     System.out.println("Cadastrar Produto");
-                    System.out.println("Nome do Produto: ");
+                    System.out.print("Nome do Produto: ");
                     String nomeProduto = scanner.next();
                     System.out.println("Preço do Produto: ");
                     Double precoProduto = scanner.nextDouble();
@@ -72,15 +71,17 @@ public class Main {
                 case 2:
                     System.out.println("Listar Produtos");
                     List<Product> products = listaDeProdutos.findAll();
+                    System.out.println("| UUID                                 | Nome       | Preço     |");
+                    System.out.println("|--------------------------------------|------------|-----------|");
                     products.forEach(System.out::println);
                     break;
-                    
+
                 case 3:
                     System.out.println("Cadastrar Usuário");
-                    System.out.println("Nome:");
-                    String nome = scanner.next();
+                    System.out.print("Nome:");
+                    String nome = scanner.nextLine();
                     String email = InputHelper.readValidEmail(scanner);
-                    System.out.println("Senha:");
+                    System.out.print("Senha:");
                     String senha = scanner.next();
                     listaDeUsuarios.save(new User(nome, email, senha));
                     break;
@@ -88,61 +89,65 @@ public class Main {
                 case 4:
                     System.out.println("Listar Usuários");
                     List<User> users = listaDeUsuarios.findAll();
+                    System.out.println(
+                            "| UUID                                 | Nome            | Email                      |");
+                    System.out.println(
+                            "|--------------------------------------|------------------|-----------------------------|");
                     users.forEach(System.out::println);
+
                     break;
 
                 case 5:
-                    System.out.println("Saindo...");
+                    System.out.println("Registrar Venda");
+
+                    scanner.nextLine();
+                    String emailUsuario = InputHelper.readValidEmail(scanner);
+
+                    Optional<User> optionalUser = listaDeUsuarios.findByEmail(emailUsuario);
+                    if (optionalUser.isEmpty()) {
+                        System.out.println("Usuário não encontrado.");
+                        break;
+                    }
+
+                    User user = optionalUser.get();
+                    System.out.println("Usuário encontrado: " + user.getName());
+
+                    List<UUID> uuids = InputHelper.readUUIDListFromString(scanner);
+                    List<Product> produtosSelecionados = new LinkedList<>();
+
+                    for (UUID uuid : uuids) {
+                        listaDeProdutos.findById(uuid).ifPresentOrElse(
+                                produtosSelecionados::add,
+                                () -> System.out.println("Produto com ID " + uuid + " não encontrado."));
+                    }
+
+                    if (produtosSelecionados.isEmpty()) {
+                        System.out.println("Nenhum produto válido selecionado. Cancelando venda.");
+                        break;
+                    }
+
+                    PaymentType paymentType = InputHelper.readValidPaymentType(scanner);
+
+                    Venda venda = new Venda(user, produtosSelecionados, paymentType);
+                    System.out.println("\nResumo da venda:");
+                    System.out.println(venda);
+
+                    PaymentManager manager = new PaymentManager();
+                    manager.setPaymentMethod(PaymentMethodFactory.create(paymentType));
+                    manager.pay(venda.getTotal());
+
+                    VendaRepository vendaRepository = new VendaRepository(conn);
+                    vendaRepository.save(venda);
+
                     break;
 
                 case 6:
-                System.out.println("Registrar Venda");
+                    System.out.println("Saindo...");
 
-                scanner.nextLine(); // limpar buffer pendente
-                String emailUsuario = InputHelper.readValidEmail(scanner);
-            
-                Optional<User> optionalUser = listaDeUsuarios.findByEmail(emailUsuario);
-                if (optionalUser.isEmpty()) {
-                    System.out.println("Usuário não encontrado.");
                     break;
-                }
-            
-                User user = optionalUser.get();
-                System.out.println("Usuário encontrado: " + user.getName());
-            
-                List<UUID> uuids = InputHelper.readUUIDListFromString(scanner);
-                List<Product> produtosSelecionados = new LinkedList<>();
-            
-                for (UUID uuid : uuids) {
-                    listaDeProdutos.findById(uuid).ifPresentOrElse(
-                        produtosSelecionados::add,
-                        () -> System.out.println("Produto com ID " + uuid + " não encontrado.")
-                    );
-                }
-            
-                if (produtosSelecionados.isEmpty()) {
-                    System.out.println("Nenhum produto válido selecionado. Cancelando venda.");
-                    break;
-                }
-            
-                PaymentType paymentType = InputHelper.readValidPaymentType(scanner);
-            
-                Venda venda = new Venda(user, produtosSelecionados, paymentType);
-                System.out.println("\nResumo da venda:");
-                System.out.println(venda);
-            
-                PaymentManager manager = new PaymentManager();
-                manager.setPaymentMethod(PaymentMethodFactory.create(paymentType));
-                manager.pay(venda.getTotal());
-            
-                VendaRepository vendaRepository = new VendaRepository(conn);
-                vendaRepository.save(venda);
-            
-                break;
 
                 default:
                     System.out.println("Opção inválida. Tente novamente");
-
             }
 
         } while (option != 5);
